@@ -316,65 +316,10 @@ function _migrate() {
 }
 
 function _seedDemoData() {
-  const count = _db.prepare('SELECT COUNT(*) as n FROM producto').get()
-  if (count.n > 0) return
-
-  const cat = _db.prepare('INSERT INTO categoria (nombre) VALUES (?)').run('General')
-  const catId = cat.lastInsertRowid
-
-  const ins = _db.prepare(
-    'INSERT INTO producto (categoria_id, nombre, precio_compra, precio_venta, stock, stock_minimo) VALUES (?, ?, ?, ?, ?, ?)'
-  )
-  const insCodigo = _db.prepare(
-    'INSERT INTO codigo_barra (producto_id, codigo) VALUES (?, ?)'
-  )
-
-  const productos = [
-    // Bebidas
-    ['Jugo natural naranja 1L',   800,  1200, 20, 5, '7802800100001'],
-    ['Agua mineral 1.5L',         300,   650, 30, 8, '7802800100003'],
-    ['Coca-Cola 1.5L',            700,  1490, 12, 5, '7802800100004'],
-    ['Sprite 1.5L',               700,  1490,  8, 5, '7802800100010'],
-    ['Fanta naranja 1.5L',        700,  1490,  6, 5, '7802800100011'],
-    ['Jugo Watt\'s durazno 1L',   550,  1090, 14, 5, '7802800100012'],
-    ['Agua con gas 500ml',        350,   790, 24, 8, '7802800100013'],
-    ['Bebida energética 500ml',  1100,  1990,  5, 3, '7802800100014'],
-    // Lácteos
-    ['Leche entera 1L',           600,  1090,  4, 5, '7802800100006'],
-    ['Leche descremada 1L',       650,  1150,  0, 5, '7802800100015'],
-    ['Yogur natural 165g',        350,   690, 10, 5, '7802800100016'],
-    ['Queso laminado 150g',      1200,  2290,  3, 4, '7802800100017'],
-    // Panadería
-    ['Pan molde blanco',          400,   950, 15, 5, '7802800100002'],
-    ['Pan molde integral',        450,   990,  7, 5, '7802800100018'],
-    ['Marraqueta x4',             290,   590,  0, 6, '7802800100019'],
-    // Snacks
-    ['Galletas surtidas 200g',    500,   990, 18, 5, '7802800100005'],
-    ['Papas fritas 150g',         650,  1190, 11, 5, '7802800100020'],
-    ['Maní tostado 100g',         400,   790,  9, 4, '7802800100021'],
-    ['Chocolatín 30g',            350,   690, 22, 8, '7802800100022'],
-    // Abarrotes
-    ['Arroz grado 1 kg',          700,  1290, 20, 6, '7802800100023'],
-    ['Fideos spaghetti 500g',     450,   890, 16, 6, '7802800100024'],
-    ['Aceite vegetal 1L',        1300,  2190,  0, 4, '7802800100025'],
-    ['Azúcar 1kg',                750,  1390, 13, 5, '7802800100026'],
-    ['Sal 1kg',                   300,   590, 25, 5, '7802800100027'],
-    // Higiene
-    ['Papel higiénico x4',       1500,  2590,  2, 4, '7802800100028'],
-    ['Jabón de manos 250ml',      800,  1490,  0, 3, '7802800100029'],
-    ['Shampoo 400ml',            2200,  3990,  5, 3, '7802800100030'],
-  ]
-
-  for (const [nombre, pc, pv, stock, minimo, codigo] of productos) {
-    const r = ins.run([catId, nombre, pc, pv, stock, minimo])
-    insCodigo.run([r.lastInsertRowid, codigo])
-  }
-
   const adminCount = _db.prepare('SELECT COUNT(*) as n FROM usuario').get()
   if (adminCount.n === 0) {
     const crypto = require('crypto')
     const hash = crypto.createHash('sha256').update('admin').digest('hex')
-    console.log("login-hash: " + hash)
     _db.prepare('INSERT INTO usuario (username, password, nombre, rol) VALUES (?, ?, ?, ?)').run(['admin', hash, 'Administrador', 'admin'])
   }
 }
