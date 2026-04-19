@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>MyPyme — Plan de Pruebas QA</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #1a1a1a; background: #fff; }
+
+  .portada { page-break-after: always; padding: 60px 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; }
+  .portada h1 { font-size: 32px; color: #F97316; margin-bottom: 8px; }
+  .portada h2 { font-size: 18px; font-weight: normal; color: #555; margin-bottom: 40px; }
+  .portada .meta { font-size: 13px; color: #888; line-height: 2; }
+  .portada .version { margin-top: 30px; background: #FFF7ED; border: 1px solid #FDBA74; border-radius: 8px; padding: 12px 24px; font-size: 13px; color: #C2410C; }
+
+  .page { padding: 30px 40px; page-break-before: always; }
+  .page:first-of-type { page-break-before: avoid; }
+
+  h2 { font-size: 18px; color: #F97316; border-bottom: 2px solid #FDBA74; padding-bottom: 6px; margin-bottom: 16px; }
+  h3 { font-size: 13px; font-weight: bold; color: #374151; margin: 18px 0 8px; background: #F9FAFB; padding: 6px 10px; border-left: 3px solid #F97316; }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 11px; }
+  th { background: #1F2937; color: #fff; padding: 7px 10px; text-align: left; }
+  td { padding: 6px 10px; border-bottom: 1px solid #E5E7EB; vertical-align: top; }
+  tr:nth-child(even) td { background: #F9FAFB; }
+
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 99px; font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .b-alta    { background: #FEE2E2; color: #991B1B; }
+  .b-media   { background: #FEF3C7; color: #92400E; }
+  .b-baja    { background: #D1FAE5; color: #065F46; }
+  .b-ok      { background: #D1FAE5; color: #065F46; }
+  .b-nok     { background: #FEE2E2; color: #991B1B; }
+  .b-manual  { background: #E0E7FF; color: #3730A3; }
+
+  .check-col { width: 22px; text-align: center; font-size: 14px; }
+  .id-col    { width: 60px; font-family: monospace; color: #6B7280; }
+  .pri-col   { width: 55px; }
+  .res-col   { width: 70px; }
+
+  .nota { background: #FFF7ED; border: 1px solid #FDBA74; border-radius: 6px; padding: 10px 14px; margin: 10px 0; font-size: 11px; color: #92400E; }
+  .nota strong { color: #C2410C; }
+
+  .toc { padding: 30px 40px; }
+  .toc h2 { font-size: 18px; color: #F97316; border-bottom: 2px solid #FDBA74; padding-bottom: 6px; margin-bottom: 16px; }
+  .toc ol { padding-left: 20px; line-height: 2.2; }
+  .toc li { font-size: 13px; }
+  .toc .toc-sec { color: #F97316; font-weight: bold; }
+  .toc .toc-sub { color: #555; font-weight: normal; padding-left: 10px; }
+
+  .resumen-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .resumen-card { border: 1px solid #E5E7EB; border-radius: 8px; padding: 14px; text-align: center; }
+  .resumen-card .num { font-size: 28px; font-weight: bold; color: #F97316; }
+  .resumen-card .lbl { font-size: 11px; color: #6B7280; margin-top: 4px; }
+
+  .flujo-paso { display: flex; align-items: flex-start; gap: 10px; margin: 8px 0; }
+  .flujo-num { background: #F97316; color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; flex-shrink: 0; margin-top: 1px; }
+  .flujo-txt { flex: 1; font-size: 12px; line-height: 1.5; }
+  .flujo-txt code { background: #F3F4F6; padding: 1px 4px; border-radius: 3px; font-family: monospace; }
+  .esperado { color: #065F46; font-size: 11px; margin-top: 2px; }
+
+  @media print {
+    .portada { min-height: auto; padding: 40px; }
+    .page { padding: 20px 30px; }
+    table { font-size: 10px; }
+    td, th { padding: 5px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ PORTADA ═══ -->
+<div class="portada">
+  <h1>MyPyme</h1>
+  <h2>Plan de Pruebas QA · Guía de Ejecución Manual</h2>
+  <div class="meta">
+    <div><strong>Sistema:</strong> MyPyme — Punto de Venta Desktop (Electron)</div>
+    <div><strong>Versión:</strong> 1.1.0</div>
+    <div><strong>Entidad:</strong> Lion Service</div>
+    <div><strong>Fecha:</strong> Abril 2026</div>
+    <div><strong>Tipo:</strong> Prueba manual funcional</div>
+  </div>
+  <div class="version">
+    Este documento es la guía de referencia para verificar que todas las funcionalidades del sistema funcionan correctamente antes de entregar al cliente.
+  </div>
+</div>
+
+<!-- ═══ ÍNDICE ═══ -->
+<div class="toc page">
+  <h2>Índice de Contenido</h2>
+  <ol>
+    <li class="toc-sec">Resumen ejecutivo y métricas</li>
+    <li class="toc-sec">Módulo 1 — Autenticación y sesión</li>
+    <li class="toc-sec">Módulo 2 — Punto de Venta</li>
+    <li class="toc-sec">Módulo 3 — Dashboard</li>
+    <li class="toc-sec">Módulo 4 — Historial de Ventas</li>
+    <li class="toc-sec">Módulo 5 — Productos e Inventario</li>
+    <li class="toc-sec">Módulo 6 — Entrada de Stock</li>
+    <li class="toc-sec">Módulo 7 — Reportes / Balance</li>
+    <li class="toc-sec">Módulo 8 — Configuración</li>
+    <li class="toc-sec">Módulo 9 — Flujos de extremo a extremo</li>
+    <li class="toc-sec">Módulo 10 — Casos límite y errores esperados</li>
+    <li class="toc-sec">Hoja de resultados</li>
+  </ol>
+</div>
+
+<!-- ═══ RESUMEN ═══ -->
+<div class="page">
+  <h2>Resumen Ejecutivo</h2>
+  <div class="resumen-grid">
+    <div class="resumen-card"><div class="num">10</div><div class="lbl">Módulos a probar</div></div>
+    <div class="resumen-card"><div class="num">68</div><div class="lbl">Casos de prueba</div></div>
+    <div class="resumen-card"><div class="num">9</div><div class="lbl">Flujos E2E</div></div>
+    <div class="resumen-card"><div class="num">Alta</div><div class="lbl">Prioridad global</div></div>
+  </div>
+
+  <h3>Alcance de las pruebas</h3>
+  <table>
+    <tr><th>Módulo</th><th>Descripción</th><th>Prioridad</th></tr>
+    <tr><td>Autenticación</td><td>Login, logout, bloqueo de sesión</td><td><span class="badge b-alta">Alta</span></td></tr>
+    <tr><td>Punto de Venta</td><td>Búsqueda, carrito, descuento, confirmar venta</td><td><span class="badge b-alta">Alta</span></td></tr>
+    <tr><td>Dashboard</td><td>KPIs, gráfico de barras, top productos, métodos de pago</td><td><span class="badge b-media">Media</span></td></tr>
+    <tr><td>Historial</td><td>Listado, filtros, detalle, anulación, impresión</td><td><span class="badge b-alta">Alta</span></td></tr>
+    <tr><td>Productos</td><td>CRUD, ajuste de stock, habilitar/deshabilitar</td><td><span class="badge b-alta">Alta</span></td></tr>
+    <tr><td>Entrada de Stock</td><td>Modal, búsqueda, cantidades, registro</td><td><span class="badge b-media">Media</span></td></tr>
+    <tr><td>Reportes / Balance</td><td>Balance por período, alertas stock, Excel</td><td><span class="badge b-alta">Alta</span></td></tr>
+    <tr><td>Configuración</td><td>Negocio, categorías, clientes, proveedores, usuarios, backup, reset</td><td><span class="badge b-media">Media</span></td></tr>
+    <tr><td>Flujos E2E</td><td>Escenarios completos de uso real</td><td><span class="badge b-alta">Alta</span></td></tr>
+    <tr><td>Casos límite</td><td>Stock 0, datos inválidos, acciones sin permiso</td><td><span class="badge b-media">Media</span></td></tr>
+  </table>
+
+  <h3>Cómo usar este documento</h3>
+  <p style="font-size:12px;line-height:1.8;color:#374151">
+    1. Ejecutar cada caso de prueba en el orden indicado.<br>
+    2. Marcar ✅ si el resultado obtenido coincide con el resultado esperado.<br>
+    3. Marcar ❌ si hay diferencia y anotar la descripción del error en la columna "Observaciones".<br>
+    4. Casos con prioridad <span class="badge b-alta">Alta</span> son bloqueantes: deben pasar antes de entregar al cliente.<br>
+    5. Al final, completar la Hoja de Resultados con la firma del responsable.
+  </p>
+</div>
+
+<!-- ═══ MÓDULO 1 — AUTENTICACIÓN ═══ -->
+<div class="page">
+  <h2>Módulo 1 — Autenticación y Sesión</h2>
+
+  <div class="nota"><strong>Precondición:</strong> La app está abierta y muestra la pantalla de login.</div>
+
+  <table>
+    <tr>
+      <th class="check-col">✓</th>
+      <th class="id-col">ID</th>
+      <th>Caso de prueba</th>
+      <th>Pasos</th>
+      <th>Resultado esperado</th>
+      <th class="pri-col">Prioridad</th>
+      <th class="res-col">Resultado</th>
+      <th>Observaciones</th>
+    </tr>
+    <tr>
+      <td class="check-col">☐</td>
+      <td class="id-col">AU-01</td>
+      <td>Login con credenciales correctas</td>
+      <td>Ingresar usuario "admin" y contraseña "admin" → clic Ingresar</td>
+      <td>Se oculta el login, aparece la app con el nombre del usuario en la barra superior</td>
+      <td><span class="badge b-alta">Alta</span></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="check-col">☐</td>
+      <td class="id-col">AU-02</td>
+      <td>Login con credenciales incorrectas</td>
+      <td>Ingresar usuario "admin" y contraseña "wrongpass" → Ingresar</td>
+      <td>Muestra mensaje "Usuario o contraseña incorrectos". No ingresa a la app.</td>
+      <td><span class="badge b-alta">Alta</span></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="check-col">☐</td>
+      <td class="id-col">AU-03</td>
+      <td>Login con campos vacíos</td>
+      <td>Dejar ambos campos vacíos → clic Ingresar</td>
+      <td>Muestra "Completa los campos". No intenta el login.</td>
+      <td><span class="badge b-media">Media</span></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="check-col">☐</td>
+      <td class="id-col">AU-04</td>
+      <td>Enter en campo contraseña inicia sesión</td>
+      <td>Escribir usuario y contraseña, presionar Enter en el campo de contraseña</td>
+      <td>Se ejecuta el login igual que hacer clic en Ingresar</td>
+      <td><span class="badge b-baja">Baja</span></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="check-col">☐</td>
+      <td class="id-col">AU-05</td>
+      <td>Cerrar sesión (Salir)</td>
+      <td>Estando logueado, clic en botón "Salir" en la barra superior</td>
+      <td>Vuelve a mostrar la pantalla de login. Campos vacíos.</td>
+      <td><span class="badge b-alta">Alta</span></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td class="check-col">☐</td>
+      <td class="id-col">AU-06</td>
+      <td>Logo y nombre en pantalla de login</td>
+      <td>Observar la pantalla de login sin interacción</td>
+      <td>Muestra logo PNG de MyPyme, texto "MyPyme" grande en naranja, texto "Lion Service" debajo en gris</td>
+      <td><span class="badge b-baja">Baja</span></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ MÓDULO 2 — PUNTO DE VENTA ═══ -->
+<div class="page">
+  <h2>Módulo 2 — Punto de Venta</h2>
+
+  <div class="nota"><strong>Precondición:</strong> Usuario logueado. Existen productos con stock disponible en la base de datos.</div>
+
+  <h3>2A — Búsqueda de productos</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>PV-01</td>
+      <td>Búsqueda por nombre</td>
+      <td>Escribir "leche" en el campo de búsqueda</td>
+      <td>Aparece lista de productos que contienen "leche" en el nombre en menos de 500ms</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-02</td>
+      <td>Búsqueda por código de barras (Enter)</td>
+      <td>Escribir "7802800100001" → presionar Enter</td>
+      <td>El producto "Jugo natural naranja 1L" se agrega directamente al carrito</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-03</td>
+      <td>Búsqueda sin resultados</td>
+      <td>Escribir "zzznoresult" en búsqueda</td>
+      <td>Aparece mensaje "Sin resultados para zzznoresult"</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-04</td>
+      <td>Producto sin stock bloqueado</td>
+      <td>Buscar un producto con stock = 0</td>
+      <td>Aparece la tarjeta con opacidad reducida, botón "+" deshabilitado, no se puede agregar</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+  </table>
+
+  <h3>2B — Carrito</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>PV-05</td>
+      <td>Agregar producto al carrito</td>
+      <td>Clic en una tarjeta de producto con stock disponible</td>
+      <td>Producto aparece en el carrito con cantidad 1. Total se actualiza. Aparece toast con nombre del producto.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-06</td>
+      <td>Incrementar cantidad</td>
+      <td>Con producto en carrito, clic en botón "+"</td>
+      <td>La cantidad sube a 2. El subtotal y total se recalculan.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-07</td>
+      <td>Reducir cantidad a 0 elimina el ítem</td>
+      <td>Con producto en cantidad 1 en carrito, clic en "−"</td>
+      <td>El ítem desaparece del carrito. Si era el único, vuelve a aparecer "Agrega productos".</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-08</td>
+      <td>Eliminar ítem con ×</td>
+      <td>Clic en el botón × de cualquier ítem</td>
+      <td>El ítem se elimina del carrito.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-09</td>
+      <td>Aplicar descuento</td>
+      <td>Agregar productos al carrito, escribir "500" en el campo "Descuento $"</td>
+      <td>El total se reduce en $500. Aparece el desglose "Subtotal X − Descuento $500".</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-10</td>
+      <td>Cancelar carrito</td>
+      <td>Con ítems en carrito, clic en "Cancelar"</td>
+      <td>El carrito se vacía, descuento vuelve a 0, búsqueda se limpia y recibe el foco.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+  </table>
+
+  <h3>2C — Confirmar Venta</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>PV-11</td>
+      <td>Confirmar venta básica</td>
+      <td>Agregar 1 producto → seleccionar pago "Efectivo" → clic "Confirmar venta"</td>
+      <td>Aparece toast con número de boleta y monto. Carrito se vacía. Resumen del día se actualiza.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-12</td>
+      <td>Confirmar venta con descuento</td>
+      <td>Agregar productos, aplicar descuento, confirmar</td>
+      <td>La venta se registra con el total descontado. En historial muestra el descuento aplicado.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-13</td>
+      <td>Stock se reduce tras venta</td>
+      <td>Confirmar venta de 2 unidades de un producto → ir a Productos</td>
+      <td>El stock del producto se redujo en 2 unidades.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-14</td>
+      <td>Botón confirmar deshabilitado con carrito vacío</td>
+      <td>Observar botón "Confirmar venta" con carrito vacío</td>
+      <td>El botón está deshabilitado (no se puede clicar).</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PV-15</td>
+      <td>Cambiar método de pago</td>
+      <td>Agregar producto, cambiar selector a "Débito", confirmar venta</td>
+      <td>En Historial la venta aparece con método "debito".</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ MÓDULO 3 — DASHBOARD ═══ -->
+<div class="page">
+  <h2>Módulo 3 — Dashboard</h2>
+
+  <div class="nota"><strong>Precondición:</strong> Existen ventas registradas en la base de datos (al menos 1 hoy, y algunas del mes actual).</div>
+
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>DB-01</td>
+      <td>Carga de KPIs</td>
+      <td>Clic en la pestaña "Dashboard"</td>
+      <td>Aparecen 3 tarjetas KPI (Hoy / Últimos 7 días / Este mes) con valores numéricos. No aparecen "—".</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>DB-02</td>
+      <td>Gráfico de barras se renderiza</td>
+      <td>En la vista Dashboard, observar la sección "Ingresos — últimos 30 días"</td>
+      <td>Aparece un gráfico de barras verticales con 30 columnas (una por día). Las barras tienen altura proporcional a los ingresos.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>DB-03</td>
+      <td>Top 5 productos del mes</td>
+      <td>Observar la sección "Top 5 productos del mes"</td>
+      <td>Lista hasta 5 productos ordenados por unidades vendidas. Muestra nombre, unidades e ingresos generados.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>DB-04</td>
+      <td>Métodos de pago del mes</td>
+      <td>Observar la sección "Por método de pago"</td>
+      <td>Aparece una tarjeta por cada método usado (efectivo, débito, etc.) con el total recaudado y cantidad de ventas.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>DB-05</td>
+      <td>Dashboard sin datos</td>
+      <td>Si no hay ventas, verificar que no haya errores visibles</td>
+      <td>Muestra "Sin datos en los últimos 30 días" / "Sin ventas este mes" en lugar de errores.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>DB-06</td>
+      <td>Ganancia negativa se muestra en rojo</td>
+      <td>Si el costo supera los ingresos, verificar color de ganancia</td>
+      <td>El valor de ganancia aparece en rojo cuando es negativo.</td>
+      <td><span class="badge b-baja">Baja</span></td><td></td><td></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ MÓDULO 4 — HISTORIAL ═══ -->
+<div class="page">
+  <h2>Módulo 4 — Historial de Ventas</h2>
+
+  <div class="nota"><strong>Precondición:</strong> Existen ventas registradas. Al menos 1 venta completada hoy.</div>
+
+  <h3>4A — Listado y filtros</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>HI-01</td>
+      <td>Ver historial del mes actual</td>
+      <td>Clic en pestaña "Historial" → clic "Buscar" con fechas del mes actual</td>
+      <td>Aparece tabla con las ventas del mes. Columnas: Boleta, Fecha, Pago, Total, Descuento, Cliente, Estado.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>HI-02</td>
+      <td>Filtrar por estado "Completadas"</td>
+      <td>Seleccionar "Completadas" en el selector → Buscar</td>
+      <td>Solo aparecen ventas con estado "completada". Ninguna anulada.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>HI-03</td>
+      <td>Filtrar por rango de fechas</td>
+      <td>Cambiar "Desde" a fecha anterior y "Hasta" a hoy → Buscar</td>
+      <td>Solo aparecen ventas dentro del rango seleccionado.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>HI-04</td>
+      <td>Sin resultados en período</td>
+      <td>Seleccionar un rango de fechas sin ventas → Buscar</td>
+      <td>Aparece "No hay ventas en el período seleccionado". Sin errores.</td>
+      <td><span class="badge b-baja">Baja</span></td><td></td><td></td>
+    </tr>
+  </table>
+
+  <h3>4B — Detalle y acciones</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>HI-05</td>
+      <td>Ver detalle de venta</td>
+      <td>Clic en cualquier fila de la tabla del historial</td>
+      <td>Se abre el modal con número de boleta, fecha, método de pago, listado de productos, y total.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>HI-06</td>
+      <td>Anular una venta</td>
+      <td>Abrir detalle de venta completada → clic "Anular venta" → confirmar</td>
+      <td>La venta cambia a estado "anulada". El stock de los productos vuelve a su valor anterior. Toast confirma la acción.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>HI-07</td>
+      <td>Venta anulada no se puede anular de nuevo</td>
+      <td>Abrir detalle de una venta ya anulada</td>
+      <td>El botón "Anular venta" NO aparece (está oculto) en ventas con estado anulada.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>HI-08</td>
+      <td>Imprimir boleta</td>
+      <td>Abrir detalle de venta → clic "Imprimir boleta"</td>
+      <td>Se abre el diálogo de impresión del sistema. La vista previa muestra: nombre del negocio, boleta, productos y total.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>HI-09</td>
+      <td>Cerrar modal de detalle</td>
+      <td>Clic en botón "Cerrar" del modal</td>
+      <td>El modal se cierra. La tabla del historial sigue visible.</td>
+      <td><span class="badge b-baja">Baja</span></td><td></td><td></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ MÓDULO 5 — PRODUCTOS ═══ -->
+<div class="page">
+  <h2>Módulo 5 — Productos e Inventario</h2>
+
+  <h3>5A — Crear y editar productos</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>PR-01</td>
+      <td>Crear producto nuevo</td>
+      <td>Clic "+ Nuevo producto" → completar nombre "Test QA" y precio venta "999" → Guardar</td>
+      <td>El producto aparece en la lista. Toast confirma "Producto creado".</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PR-02</td>
+      <td>Validación: nombre obligatorio</td>
+      <td>Abrir modal, dejar nombre vacío, ingresar precio → Guardar</td>
+      <td>Toast de advertencia "Nombre y precio son obligatorios". No se crea el producto.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PR-03</td>
+      <td>Editar producto existente</td>
+      <td>Clic en tarjeta de producto → "Editar" → cambiar precio venta → Guardar</td>
+      <td>El precio se actualiza en la lista. Toast confirma "Producto actualizado".</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PR-04</td>
+      <td>Asignar categoría al crear</td>
+      <td>Crear producto y seleccionar una categoría en el formulario</td>
+      <td>El producto aparece bajo la categoría seleccionada en la vista de productos.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+  </table>
+
+  <h3>5B — Stock y estado</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>PR-05</td>
+      <td>Ajustar stock (sumar)</td>
+      <td>Clic en producto → "Ajustar stock" → valor 5 → clic "+"</td>
+      <td>El stock del producto aumenta en 5 unidades. Toast confirma.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PR-06</td>
+      <td>Ajustar stock (restar)</td>
+      <td>Clic en producto → "Ajustar stock" → valor 2 → clic "−"</td>
+      <td>El stock baja en 2. No puede quedar negativo (mínimo 0).</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PR-07</td>
+      <td>Deshabilitar producto</td>
+      <td>Clic en producto activo → "Deshabilitar" → confirmar</td>
+      <td>El producto aparece marcado como "Deshabilitado". No aparece en búsquedas de venta.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PR-08</td>
+      <td>Habilitar producto</td>
+      <td>Clic en producto deshabilitado → "Habilitar"</td>
+      <td>El producto vuelve a estar activo y aparece en búsquedas de venta.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PR-09</td>
+      <td>Alerta stock bajo</td>
+      <td>Observar la barra superior con productos que tienen stock ≤ stock mínimo</td>
+      <td>Aparece el badge naranja "!" en la barra superior. En Vista Productos las tarjetas muestran "⚠ stock bajo" o "Sin stock".</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>PR-10</td>
+      <td>Búsqueda de producto en inventario</td>
+      <td>En la vista Productos, escribir parte del nombre en el buscador</td>
+      <td>La lista se filtra en tiempo real mostrando solo productos que coinciden.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ MÓDULO 6 — ENTRADA DE STOCK ═══ -->
+<div class="page">
+  <h2>Módulo 6 — Entrada de Stock (Compras)</h2>
+
+  <div class="nota"><strong>Precondición:</strong> Existe al menos un proveedor activo en Configuración.</div>
+
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>ES-01</td>
+      <td>Abrir modal de entrada</td>
+      <td>En vista Productos, clic "+ Entrada de stock"</td>
+      <td>Se abre el modal con selector de proveedor, campo de búsqueda y tabla vacía.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>ES-02</td>
+      <td>Buscar producto en entrada</td>
+      <td>En modal, escribir nombre en búsqueda → clic "Buscar"</td>
+      <td>Aparecen botones con los productos encontrados y su stock actual.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>ES-03</td>
+      <td>Agregar producto a la entrada</td>
+      <td>Clic en el botón de un producto buscado</td>
+      <td>El producto aparece en la tabla de entrada con cantidad 1 y precio de compra actual.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>ES-04</td>
+      <td>Modificar cantidad y precio</td>
+      <td>Cambiar la cantidad a 10 y el precio costo a 800 en la tabla de entrada</td>
+      <td>El subtotal se recalcula (10 × 800 = $8.000). El total del modal se actualiza.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>ES-05</td>
+      <td>Registrar entrada de stock</td>
+      <td>Con ítems en la tabla, seleccionar proveedor, clic "Registrar entrada"</td>
+      <td>El modal se cierra. El stock de cada producto aumentó con las cantidades ingresadas. El precio de compra se actualizó.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>ES-06</td>
+      <td>Botón registrar deshabilitado sin ítems</td>
+      <td>Abrir modal sin agregar productos</td>
+      <td>El botón "Registrar entrada" está deshabilitado.</td>
+      <td><span class="badge b-baja">Baja</span></td><td></td><td></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ MÓDULO 7 — REPORTES ═══ -->
+<div class="page">
+  <h2>Módulo 7 — Reportes / Balance</h2>
+
+  <h3>7A — Balance por período</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>RE-01</td>
+      <td>Generar balance semanal</td>
+      <td>Clic "Reportes" → ajustar fechas a la semana actual → "Generar balance"</td>
+      <td>Aparecen 4 tarjetas: Ventas realizadas, Ingresos totales, Costo de ventas, Ganancia neta.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>RE-02</td>
+      <td>Ganancia positiva en verde</td>
+      <td>Generar balance con ventas que generan ganancia</td>
+      <td>La tarjeta "Ganancia neta" muestra el valor en color verde.</td>
+      <td><span class="badge b-baja">Baja</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>RE-03</td>
+      <td>Alertas de stock en balance</td>
+      <td>Generar cualquier balance con productos de stock bajo</td>
+      <td>Debajo de las tarjetas aparece la lista de productos con stock bajo o sin stock.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+  </table>
+
+  <h3>7B — Reporte Excel</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>RE-04</td>
+      <td>Generar Excel del mes actual</td>
+      <td>En Reportes, seleccionar mes y año actual → clic "Descargar Excel"</td>
+      <td>Se genera un archivo .xlsx en la carpeta de Descargas. El archivo se abre automáticamente.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>RE-05</td>
+      <td>Contenido del Excel — hojas</td>
+      <td>Abrir el Excel generado</td>
+      <td>El archivo tiene 6 hojas: Resumen, Ventas por día, Top productos, Por método de pago, Historial, Inventario.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>RE-06</td>
+      <td>Hoja Resumen tiene datos correctos</td>
+      <td>Abrir hoja "Resumen" del Excel</td>
+      <td>Muestra nombre del negocio (si está configurado), período, total ventas, ingresos, costos, ganancia y margen %.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>RE-07</td>
+      <td>Botón deshabilitado durante generación</td>
+      <td>Clic "Descargar Excel" y observar el botón mientras procesa</td>
+      <td>El botón muestra "Generando..." y está deshabilitado. Al terminar vuelve a "Descargar Excel".</td>
+      <td><span class="badge b-baja">Baja</span></td><td></td><td></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ MÓDULO 8 — CONFIGURACIÓN ═══ -->
+<div class="page">
+  <h2>Módulo 8 — Configuración</h2>
+
+  <h3>8A — Datos del negocio</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>CF-01</td>
+      <td>Guardar datos del negocio</td>
+      <td>Ir a Configuración → rellenar nombre "Mi Tienda", dirección y teléfono → Guardar datos</td>
+      <td>Toast "Datos del negocio guardados". Al ir a Historial e imprimir boleta, aparece "Mi Tienda" en el encabezado.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CF-02</td>
+      <td>Los datos persisten al reabrir config</td>
+      <td>Guardar datos → ir a otra pestaña → volver a Configuración</td>
+      <td>Los campos de datos del negocio muestran los valores guardados anteriormente.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+  </table>
+
+  <h3>8B — Categorías, Clientes, Proveedores</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>CF-03</td>
+      <td>Crear categoría</td>
+      <td>Escribir "Bebidas frías" en campo de categoría → Agregar</td>
+      <td>Aparece en la lista de categorías. Toast confirma. Disponible en formulario de productos.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CF-04</td>
+      <td>Agregar cliente</td>
+      <td>Escribir nombre "Juan Pérez" y teléfono → Agregar</td>
+      <td>El cliente aparece en la lista. Toast confirma.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CF-05</td>
+      <td>Agregar proveedor</td>
+      <td>Escribir nombre "Distribuidora ABC" → Agregar</td>
+      <td>El proveedor aparece en la lista. Toast confirma. Disponible en modal de Entrada de stock.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+  </table>
+
+  <h3>8C — Backup y Reset</h3>
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>CF-06</td>
+      <td>Exportar backup</td>
+      <td>Clic "Exportar backup" en Configuración</td>
+      <td>Toast "Backup exportado a Descargas". Se abre el explorador mostrando el archivo <code>mypyme-backup-YYYY-MM-DD.db</code>.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CF-07</td>
+      <td>Reset desde Configuración</td>
+      <td>Clic "Restablecer" → confirmar en el diálogo</td>
+      <td>La app se reinicia con datos de ejemplo. Todos los datos anteriores se eliminaron.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CF-08</td>
+      <td>Reset desde Login (botón provisional)</td>
+      <td>En pantalla de login, clic "Reiniciar sistema" → confirmar</td>
+      <td>La app se reinicia con datos de ejemplo.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ MÓDULO 9 — FLUJOS E2E ═══ -->
+<div class="page">
+  <h2>Módulo 9 — Flujos de Extremo a Extremo</h2>
+  <p style="font-size:12px;color:#555;margin-bottom:16px">Estos flujos simulan el uso real del sistema. Son los más importantes para validar que el sistema funciona en conjunto.</p>
+
+  <h3>Flujo 1 — Día de trabajo completo</h3>
+  <div class="flujo-paso"><div class="flujo-num">1</div><div class="flujo-txt">Abrir la app. Ingresar con usuario "admin" / contraseña "admin".<div class="esperado">✓ Se accede a la vista de Venta.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">2</div><div class="flujo-txt">Ir a Configuración → guardar el nombre del negocio "Minimarket Central".<div class="esperado">✓ Toast confirma. Datos guardados.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">3</div><div class="flujo-txt">Ir a Venta. Buscar "Coca" y agregar 2 unidades al carrito.<div class="esperado">✓ Carrito muestra 2 × Coca-Cola.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">4</div><div class="flujo-txt">Agregar "Pan molde" al carrito. Aplicar descuento de $200. Confirmar venta en "Efectivo".<div class="esperado">✓ Toast con número de boleta. Carrito vacío. Resumen del día actualizado.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">5</div><div class="flujo-txt">Ir a Dashboard. Verificar que "Hoy" muestra 1 venta y los ingresos correctos.<div class="esperado">✓ KPI Hoy: 1 venta, ingresos = total de la venta.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">6</div><div class="flujo-txt">Ir a Historial. Buscar las ventas de hoy. Abrir el detalle de la venta anterior.<div class="esperado">✓ Modal muestra los productos, descuento aplicado y total correcto.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">7</div><div class="flujo-txt">Imprimir la boleta desde el modal de detalle.<div class="esperado">✓ Se abre el diálogo de impresión con el nombre del negocio y los datos de la venta.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">8</div><div class="flujo-txt">Ir a Reportes y generar el Excel del mes actual.<div class="esperado">✓ Se descarga un .xlsx. La hoja Resumen muestra los datos del día. La hoja Historial incluye la venta.</div></div></div>
+
+  <h3>Flujo 2 — Entrada de stock y verificación</h3>
+  <div class="flujo-paso"><div class="flujo-num">1</div><div class="flujo-txt">Ir a Configuración → agregar proveedor "Distribuidora Norte". Anotar el stock actual de "Leche entera 1L".<div class="esperado">✓ Proveedor creado.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">2</div><div class="flujo-txt">Ir a Productos → "+ Entrada de stock". Seleccionar "Distribuidora Norte". Buscar "Leche" y agregar con cantidad 10 y precio 620.<div class="esperado">✓ Tabla muestra Leche, cant. 10, subtotal $6.200.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">3</div><div class="flujo-txt">Clic "Registrar entrada".<div class="esperado">✓ Toast confirma. Modal se cierra. Stock de Leche aumentó en 10 unidades. Precio compra ahora es $620.</div></div></div>
+
+  <h3>Flujo 3 — Anular venta y verificar stock</h3>
+  <div class="flujo-paso"><div class="flujo-num">1</div><div class="flujo-txt">Anotar el stock actual de "Agua mineral 1.5L".<div class="esperado">✓ Stock registrado.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">2</div><div class="flujo-txt">Vender 3 unidades de "Agua mineral 1.5L" vía Punto de Venta.<div class="esperado">✓ Stock bajó en 3.</div></div></div>
+  <div class="flujo-paso"><div class="flujo-num">3</div><div class="flujo-txt">Ir a Historial → abrir la venta → "Anular venta" → confirmar.<div class="esperado">✓ Venta marcada como anulada. Stock de Agua mineral volvió al valor original.</div></div></div>
+</div>
+
+<!-- ═══ MÓDULO 10 — CASOS LÍMITE ═══ -->
+<div class="page">
+  <h2>Módulo 10 — Casos Límite y Errores Esperados</h2>
+
+  <table>
+    <tr><th class="check-col">✓</th><th class="id-col">ID</th><th>Caso</th><th>Pasos</th><th>Resultado esperado</th><th class="pri-col">Prior.</th><th class="res-col">Resultado</th><th>Obs.</th></tr>
+    <tr>
+      <td>☐</td><td>CL-01</td>
+      <td>Venta con stock insuficiente</td>
+      <td>Agregar al carrito 999 unidades de un producto con stock bajo → Confirmar</td>
+      <td>Aparece toast de error "Stock insuficiente". La venta no se registra. Stock no cambia.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CL-02</td>
+      <td>Descuento mayor que el total</td>
+      <td>Agregar producto de $1.000 y poner descuento $5.000</td>
+      <td>El descuento se limita al total ($1.000). El total no queda negativo.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CL-03</td>
+      <td>Crear categoría duplicada</td>
+      <td>Crear una categoría con el mismo nombre que una existente</td>
+      <td>Toast de error "Ya existe una categoría con ese nombre". No se crea el duplicado.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CL-04</td>
+      <td>Crear usuario duplicado</td>
+      <td>Crear usuario con el mismo username que uno existente</td>
+      <td>Toast de error "Ya existe un usuario con ese nombre".</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CL-05</td>
+      <td>Ajustar stock a 0 no queda negativo</td>
+      <td>Con producto de stock 2, restar 10 unidades</td>
+      <td>El stock queda en 0, no en valor negativo.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CL-06</td>
+      <td>Cambio de tema persiste</td>
+      <td>Cambiar a tema oscuro → cerrar sesión → volver a ingresar</td>
+      <td>El tema oscuro sigue activo después del login.</td>
+      <td><span class="badge b-baja">Baja</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CL-07</td>
+      <td>Sección Usuarios solo visible para admin</td>
+      <td>Crear usuario con rol "funcionario" → cerrar sesión → login con ese usuario</td>
+      <td>En Configuración, la sección "Usuarios" no aparece.</td>
+      <td><span class="badge b-alta">Alta</span></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td>☐</td><td>CL-08</td>
+      <td>Excel de mes sin ventas</td>
+      <td>Generar Excel de un mes sin ventas (ej: enero del año pasado)</td>
+      <td>Se genera el Excel sin errores. Las hojas de ventas están vacías pero el archivo se crea correctamente.</td>
+      <td><span class="badge b-media">Media</span></td><td></td><td></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ═══ HOJA DE RESULTADOS ═══ -->
+<div class="page">
+  <h2>Hoja de Resultados</h2>
+
+  <table>
+    <tr><th>Módulo</th><th>Total casos</th><th>Pasaron ✅</th><th>Fallaron ❌</th><th>Sin probar ☐</th><th>Resultado</th></tr>
+    <tr><td>1 — Autenticación</td><td>6</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>2 — Punto de Venta</td><td>15</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>3 — Dashboard</td><td>6</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>4 — Historial</td><td>9</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>5 — Productos</td><td>10</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>6 — Entrada de Stock</td><td>6</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>7 — Reportes / Balance</td><td>7</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>8 — Configuración</td><td>8</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>9 — Flujos E2E</td><td>3 flujos</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>10 — Casos límite</td><td>8</td><td></td><td></td><td></td><td></td></tr>
+    <tr style="background:#FFF7ED"><td><strong>TOTAL</strong></td><td><strong>78</strong></td><td><strong></strong></td><td><strong></strong></td><td><strong></strong></td><td><strong></strong></td></tr>
+  </table>
+
+  <div style="margin-top:30px">
+    <h3>Criterio de aceptación</h3>
+    <p style="font-size:12px;line-height:2;color:#374151;margin-top:8px">
+      ✅ <strong>APROBADO para entrega:</strong> 100% de los casos de prioridad Alta pasan. Menos del 10% de los casos de prioridad Media fallan.<br>
+      ⚠ <strong>ENTREGA CONDICIONAL:</strong> Fallan casos Media/Baja no bloqueantes. Se entrega con lista de bugs conocidos.<br>
+      ❌ <strong>NO APTO para entrega:</strong> Falla 1 o más casos de prioridad Alta.
+    </p>
+  </div>
+
+  <div style="margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px">
+    <div>
+      <p style="font-size:12px;color:#555">Probado por:</p>
+      <div style="border-bottom:1px solid #000;height:40px;margin-top:8px"></div>
+      <p style="font-size:11px;color:#888;margin-top:4px">Nombre / Firma</p>
+    </div>
+    <div>
+      <p style="font-size:12px;color:#555">Fecha de ejecución:</p>
+      <div style="border-bottom:1px solid #000;height:40px;margin-top:8px"></div>
+      <p style="font-size:11px;color:#888;margin-top:4px">DD/MM/AAAA</p>
+    </div>
+    <div>
+      <p style="font-size:12px;color:#555">Resultado final:</p>
+      <div style="border-bottom:1px solid #000;height:40px;margin-top:8px"></div>
+      <p style="font-size:11px;color:#888;margin-top:4px">APROBADO / CONDICIONAL / NO APTO</p>
+    </div>
+    <div>
+      <p style="font-size:12px;color:#555">Versión probada:</p>
+      <div style="border-bottom:1px solid #000;height:40px;margin-top:8px"></div>
+      <p style="font-size:11px;color:#888;margin-top:4px">Número de versión del sistema</p>
+    </div>
+  </div>
+
+  <div style="margin-top:30px">
+    <h3>Bugs encontrados</h3>
+    <table>
+      <tr><th>#</th><th>ID Caso</th><th>Descripción del bug</th><th>Prioridad</th><th>Estado</th></tr>
+      <tr><td>1</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>2</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>3</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>4</td><td></td><td></td><td></td><td></td></tr>
+      <tr><td>5</td><td></td><td></td><td></td><td></td></tr>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

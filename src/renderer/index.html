@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>MyPyme | Lion Service</title>
+  <link rel="icon" type="image/x-icon" href="../../assets/image/logo-ico.ico">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- BARRA SUPERIOR -->
+  <header class="topbar">
+    <span class="logo"><img src="../../assets/image/logo.png" alt="MyPyme" class="logo-img">MyPyme</span>
+    <nav class="nav-tabs">
+      <button class="tab active" data-view="venta">Venta</button>
+      <button class="tab" data-view="dashboard">Dashboard</button>
+      <button class="tab" data-view="historial">Historial</button>
+      <button class="tab" data-view="productos">Productos</button>
+      <button class="tab" data-view="balance">Reportes</button>
+      <button class="tab" data-view="config">Configuración</button>
+    </nav>
+    <div class="topbar-right">
+      <button class="btn-icon" id="btn-tema" title="Cambiar tema">◑</button>
+      <span class="topbar-user"><strong id="topbar-username">—</strong></span>
+      <button class="btn-icon" id="btn-logout">Salir</button>
+      <span class="badge-alerta" id="badge-alerta" hidden>!</span>
+      <span id="resumen-hoy" class="resumen-hoy">—</span>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VISTA: PUNTO DE VENTA
+  ═══════════════════════════════════════════════════════ -->
+  <section class="view active" id="view-venta">
+
+    <div class="panel-busqueda">
+      <div class="busqueda-header">
+        <input type="text" id="input-busqueda" placeholder="Código de barras o nombre del producto..."
+          autocomplete="off" autofocus />
+        <p class="busqueda-hint" id="busqueda-hint">Escribe para buscar por nombre · Enter para escanear código</p>
+      </div>
+      <div class="resultados-lista" id="resultados-lista">
+        <p class="resultados-vacio" id="resultados-vacio">Los resultados aparecerán aquí</p>
+      </div>
+    </div>
+
+    <div class="panel-carrito">
+      <div class="carrito-wrap">
+        <table class="carrito">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>Precio</th>
+              <th>Subtotal</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="carrito-body">
+            <tr id="carrito-vacio">
+              <td colspan="5">Agrega productos desde el panel izquierdo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="carrito-footer">
+        <div class="pago-selector">
+          <label>Pago</label>
+          <select id="tipo-pago">
+            <option value="efectivo">Efectivo</option>
+            <option value="debito">Débito</option>
+            <option value="credito">Crédito</option>
+            <option value="transferencia">Transferencia</option>
+          </select>
+        </div>
+        <div class="descuento-wrap">
+          <label>Descuento $</label>
+          <input type="number" id="input-descuento" min="0" step="100" value="0" placeholder="0">
+        </div>
+        <div class="total-wrap">
+          <div class="total-stack">
+            <span class="total-label">Total</span>
+            <span class="total-monto" id="total-monto">$0</span>
+            <span class="total-descuento" id="total-descuento" hidden></span>
+          </div>
+        </div>
+        <div class="acciones">
+          <button class="btn-secondary" id="btn-cancelar">Cancelar</button>
+          <button class="btn-primary" id="btn-confirmar" disabled>Confirmar venta</button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VISTA: DASHBOARD
+  ═══════════════════════════════════════════════════════ -->
+  <section class="view" id="view-dashboard">
+    <div class="dashboard-wrap">
+
+      <div class="dashboard-kpis" id="dashboard-kpis">
+        <div class="kpi-card" id="kpi-hoy">
+          <div class="kpi-period">Hoy</div>
+          <div class="kpi-ventas">— ventas</div>
+          <div class="kpi-ingresos">$—</div>
+          <div class="kpi-ganancia">Ganancia: $—</div>
+        </div>
+        <div class="kpi-card" id="kpi-semana">
+          <div class="kpi-period">Últimos 7 días</div>
+          <div class="kpi-ventas">— ventas</div>
+          <div class="kpi-ingresos">$—</div>
+          <div class="kpi-ganancia">Ganancia: $—</div>
+        </div>
+        <div class="kpi-card kpi-mes" id="kpi-mes">
+          <div class="kpi-period">Este mes</div>
+          <div class="kpi-ventas">— ventas</div>
+          <div class="kpi-ingresos">$—</div>
+          <div class="kpi-ganancia">Ganancia: $—</div>
+        </div>
+      </div>
+
+      <div class="dashboard-row">
+        <div class="dashboard-chart-wrap">
+          <div class="dashboard-section-title">Ingresos — últimos 30 días</div>
+          <div id="chart-ventas" class="bar-chart-container"></div>
+        </div>
+        <div class="dashboard-top-wrap">
+          <div class="dashboard-section-title">Top 5 productos del mes</div>
+          <div id="top-productos-list" class="top-list"></div>
+        </div>
+      </div>
+
+      <div class="dashboard-pago-wrap">
+        <div class="dashboard-section-title">Por método de pago (mes)</div>
+        <div id="pago-metodos-list" class="pago-list"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VISTA: HISTORIAL DE VENTAS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="view" id="view-historial">
+    <div class="toolbar">
+      <label>Desde <input type="date" id="hist-desde"></label>
+      <label>Hasta <input type="date" id="hist-hasta"></label>
+      <select id="hist-estado">
+        <option value="">Todos los estados</option>
+        <option value="completada">Completadas</option>
+        <option value="anulada">Anuladas</option>
+      </select>
+      <button class="btn-primary" id="btn-buscar-historial">Buscar</button>
+    </div>
+    <div id="tabla-historial" class="historial-wrap"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VISTA: PRODUCTOS
+  ═══════════════════════════════════════════════════════ -->
+  <section class="view" id="view-productos">
+    <div class="toolbar">
+      <input type="text" id="search-productos" placeholder="Buscar producto..." style="flex:1">
+      <button class="btn-secondary" id="btn-nueva-entrada">+ Entrada de stock</button>
+      <button class="btn-primary" id="btn-nuevo-producto">+ Nuevo producto</button>
+    </div>
+    <div id="lista-productos" class="lista-productos"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VISTA: REPORTES / BALANCE
+  ═══════════════════════════════════════════════════════ -->
+  <section class="view" id="view-balance">
+    <div class="toolbar">
+      <label>Desde <input type="date" id="balance-desde"></label>
+      <label>Hasta <input type="date" id="balance-hasta"></label>
+      <button class="btn-primary" id="btn-generar-balance">Generar balance</button>
+    </div>
+    <div id="resultado-balance" class="balance-cards"></div>
+    <div id="alertas-stock" class="alertas-wrap"></div>
+
+    <div class="reporte-excel-section">
+      <div class="reporte-excel-title">Reporte mensual Excel</div>
+      <div class="reporte-excel-desc">Descarga un Excel con resumen, ventas por día, top productos, inventario y más.</div>
+      <div class="reporte-excel-controls">
+        <label>Mes
+          <select id="excel-mes">
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+        </label>
+        <label>Año <input type="number" id="excel-ano" min="2020" max="2030" style="width:80px"></label>
+        <button class="btn-primary" id="btn-generar-excel">Descargar Excel</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       VISTA: CONFIGURACIÓN
+  ═══════════════════════════════════════════════════════ -->
+  <section class="view" id="view-config">
+    <div class="config-scroll">
+    <div class="config-wrap">
+
+      <!-- Datos del negocio -->
+      <div class="config-section">
+        <h2 class="config-section-title">Datos del negocio</h2>
+        <div class="config-negocio-form">
+          <label>Nombre del negocio <input type="text" id="neg-nombre" placeholder="Ej: Kiosco Central" autocomplete="off"></label>
+          <label>RUT / CUIT <input type="text" id="neg-rut" placeholder="Ej: 12.345.678-9" autocomplete="off"></label>
+          <label>Dirección <input type="text" id="neg-direccion" placeholder="Ej: Av. Principal 123" autocomplete="off"></label>
+          <label>Teléfono <input type="text" id="neg-telefono" placeholder="Ej: +56 9 1234 5678" autocomplete="off"></label>
+          <label>Email <input type="email" id="neg-email" placeholder="Ej: contacto@negocio.cl" autocomplete="off"></label>
+          <button class="btn-primary" id="btn-guardar-negocio">Guardar datos</button>
+        </div>
+      </div>
+
+      <!-- Usuarios (solo admin) -->
+      <div class="config-section" id="section-usuarios" hidden>
+        <h2 class="config-section-title">Usuarios</h2>
+        <div id="lista-usuarios"></div>
+        <div class="config-user-form">
+          <input type="text" id="u-username" placeholder="Usuario" autocomplete="off">
+          <input type="text" id="u-nombre" placeholder="Nombre completo">
+          <input type="password" id="u-password" placeholder="Contraseña" autocomplete="new-password">
+          <button class="btn-primary" id="btn-crear-usuario">Agregar</button>
+        </div>
+      </div>
+
+      <!-- Apariencia -->
+      <div class="config-section">
+        <h2 class="config-section-title">Apariencia</h2>
+        <div class="theme-options">
+          <button class="theme-btn active" data-theme-val="light">
+            <span class="theme-swatch" style="background:#FFFFFF;border-color:#E5E5E5"></span>
+            Claro
+          </button>
+          <button class="theme-btn" data-theme-val="dark">
+            <span class="theme-swatch" style="background:#1F1F1F;border-color:#2A2A2A"></span>
+            Oscuro
+          </button>
+        </div>
+      </div>
+
+      <!-- Categorías -->
+      <div class="config-section">
+        <h2 class="config-section-title">Categorías</h2>
+        <div id="lista-categorias"></div>
+        <div class="config-cat-form">
+          <input type="text" id="cat-nombre" placeholder="Nombre de categoría" maxlength="60">
+          <input type="text" id="cat-descripcion" placeholder="Descripción (opcional)">
+          <button class="btn-primary" id="btn-guardar-cat">Agregar</button>
+        </div>
+      </div>
+
+      <!-- Clientes -->
+      <div class="config-section">
+        <h2 class="config-section-title">Clientes</h2>
+        <div id="lista-clientes"></div>
+        <div class="config-cat-form">
+          <input type="text" id="cli-nombre" placeholder="Nombre del cliente" autocomplete="off">
+          <input type="text" id="cli-telefono" placeholder="Teléfono (opcional)" autocomplete="off">
+          <button class="btn-primary" id="btn-guardar-cliente">Agregar</button>
+        </div>
+      </div>
+
+      <!-- Proveedores -->
+      <div class="config-section">
+        <h2 class="config-section-title">Proveedores</h2>
+        <div id="lista-proveedores"></div>
+        <div class="config-cat-form">
+          <input type="text" id="prov-nombre" placeholder="Nombre del proveedor" autocomplete="off">
+          <input type="text" id="prov-telefono" placeholder="Teléfono (opcional)" autocomplete="off">
+          <button class="btn-primary" id="btn-guardar-proveedor">Agregar</button>
+        </div>
+      </div>
+
+      <!-- Respaldo -->
+      <div class="config-section">
+        <h2 class="config-section-title">Respaldo</h2>
+        <div class="config-item">
+          <div>
+            <div class="config-item-label">Exportar copia de seguridad</div>
+            <div class="config-item-desc">Guarda una copia del archivo de datos en tu carpeta de Descargas.</div>
+          </div>
+          <button class="btn-secondary" id="btn-backup-db">Exportar backup</button>
+        </div>
+      </div>
+
+      <!-- Base de datos -->
+      <div class="config-section">
+        <h2 class="config-section-title">Base de datos</h2>
+        <div class="config-item">
+          <div>
+            <div class="config-item-label">Restablecer base de datos</div>
+            <div class="config-item-desc">Elimina todos los datos y recarga la app con datos de ejemplo. Esta acción no se puede deshacer.</div>
+          </div>
+          <button class="btn-danger" id="btn-reset-db">Restablecer</button>
+        </div>
+      </div>
+
+    </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       LOGIN
+  ═══════════════════════════════════════════════════════ -->
+  <div class="login-overlay" id="login-overlay">
+    <div class="login-box">
+      <div class="login-logo">
+        <img src="../../assets/image/logo.png" alt="MyPyme" class="login-logo-img">
+        <div class="login-app-name">MyPyme</div>
+        <div class="login-entity-name">Lion Service</div>
+      </div>
+      <label>Usuario <input type="text" id="login-username" autocomplete="username"></label>
+      <label>Contraseña <input type="password" id="login-password" autocomplete="current-password"></label>
+      <div class="login-error" id="login-error"></div>
+      <button class="btn-primary" id="btn-login">Ingresar</button>
+      <button class="btn-danger" id="btn-reset-db-login">Reiniciar sistema</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MODAL: NUEVO / EDITAR PRODUCTO
+  ═══════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-overlay" hidden>
+    <div class="modal">
+      <h2 class="modal-title" id="modal-title">Nuevo producto</h2>
+      <div class="form-grid">
+        <label>Nombre <input type="text" id="f-nombre" required></label>
+        <label>Código de barras <input type="text" id="f-codigo"></label>
+        <label>Precio compra <input type="number" id="f-precio-compra" min="0" step="1"></label>
+        <label>Precio venta <input type="number" id="f-precio-venta" min="0" step="1" required></label>
+        <label>Stock inicial <input type="number" id="f-stock" min="0" step="1" value="0"></label>
+        <label>Stock mínimo <input type="number" id="f-stock-min" min="0" step="1" value="5"></label>
+        <label>Unidad <input type="text" id="f-unidad" value="unidad"></label>
+        <label>Categoría
+          <select id="f-categoria">
+            <option value="">Sin categoría</option>
+          </select>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="btn-modal-cancelar">Cancelar</button>
+        <button class="btn-primary" id="btn-modal-guardar">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MODAL: AJUSTE DE STOCK
+  ═══════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="stock-overlay" hidden>
+    <div class="modal modal-sm">
+      <h2 class="modal-title" id="stock-modal-title">Ajustar stock</h2>
+      <p class="stock-actual-label">Stock actual: <strong id="stock-actual-val">—</strong></p>
+      <div class="stock-ajuste-row">
+        <button class="stock-delta-btn" id="btn-stock-menos">−</button>
+        <input type="number" id="stock-delta" value="1" min="1" step="1">
+        <button class="stock-delta-btn" id="btn-stock-mas">+</button>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="btn-stock-cancelar">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MODAL: DETALLE DE VENTA
+  ═══════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="detalle-venta-overlay" hidden>
+    <div class="modal modal-lg">
+      <h2 class="modal-title" id="detalle-venta-titulo">Detalle de venta</h2>
+      <div id="detalle-venta-content" class="detalle-venta-content"></div>
+      <div class="modal-footer">
+        <button class="btn-danger" id="btn-anular-venta" hidden>Anular venta</button>
+        <button class="btn-secondary" id="btn-imprimir-boleta">Imprimir boleta</button>
+        <button class="btn-secondary" id="btn-cerrar-detalle">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MODAL: ENTRADA DE STOCK
+  ═══════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="entrada-overlay" hidden>
+    <div class="modal modal-lg">
+      <h2 class="modal-title">Nueva entrada de stock</h2>
+      <div class="entrada-header">
+        <label>Proveedor
+          <select id="entrada-proveedor">
+            <option value="">Sin proveedor</option>
+          </select>
+        </label>
+        <label style="flex:1">Buscar producto
+          <div style="display:flex;gap:6px">
+            <input type="text" id="entrada-buscar" placeholder="Nombre del producto..." autocomplete="off">
+            <button class="btn-secondary btn-sm" id="btn-entrada-buscar">Buscar</button>
+          </div>
+        </label>
+      </div>
+      <div id="entrada-resultados" class="entrada-resultados"></div>
+      <div class="entrada-tabla-wrap">
+        <table class="entrada-tabla" id="entrada-tabla-visible">
+          <thead>
+            <tr><th>Producto</th><th>Cantidad</th><th>Precio costo</th><th>Subtotal</th><th></th></tr>
+          </thead>
+          <tbody id="entrada-body"></tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <input type="text" id="entrada-nota" placeholder="Nota (opcional)" class="entrada-nota-input">
+        <span class="entrada-total-label">Total: <strong id="entrada-total">$0</strong></span>
+        <button class="btn-secondary" id="btn-entrada-cancelar">Cancelar</button>
+        <button class="btn-primary" id="btn-entrada-guardar" disabled>Registrar entrada</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PRINT OVERLAY (solo visible al imprimir)
+  ═══════════════════════════════════════════════════════ -->
+  <div id="print-overlay">
+    <div id="print-content"></div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
